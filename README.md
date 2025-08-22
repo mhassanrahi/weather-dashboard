@@ -151,7 +151,6 @@ Weather data is cached for 5 minutes to optimize API usage:
 ## 🌐 Weather Data Sources
 
 Open-Meteo (free, no API key required)
-OpenWeather (requires API key)
 
 Data is normalized to a consistent format regardless of source.
 
