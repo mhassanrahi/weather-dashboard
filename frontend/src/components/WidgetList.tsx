@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { Widget, widgetsApi, ApiError } from '../utils/api';
-import WidgetCard from './WidgetCard';
+import { useState, useEffect } from "react";
+import { Widget, widgetsApi, ApiError } from "../utils/api";
+import WidgetCard from "./WidgetCard";
 
 export default function WidgetList() {
   const [widgets, setWidgets] = useState<Widget[]>([]);
@@ -16,7 +16,7 @@ export default function WidgetList() {
       setWidgets(data);
     } catch (err) {
       const error = err as ApiError;
-      setError(error.message || 'Failed to load widgets');
+      setError(error.message || "Failed to load widgets");
     } finally {
       setIsLoading(false);
     }
@@ -32,10 +32,10 @@ export default function WidgetList() {
     fetchWidgets();
   };
 
-  // Handle new widget added
-  const handleWidgetAdded = () => {
-    fetchWidgets();
-  };
+  // Handle new widget added (unused but kept for future use)
+  // const handleWidgetAdded = () => {
+  //   fetchWidgets();
+  // };
 
   if (isLoading) {
     return (
@@ -50,11 +50,23 @@ export default function WidgetList() {
     return (
       <div className="bg-red-50 border border-red-200 rounded-lg p-6">
         <div className="flex items-center">
-          <svg className="w-6 h-6 text-red-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <svg
+            className="w-6 h-6 text-red-400 mr-3"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
           <div>
-            <h3 className="text-lg font-medium text-red-800">Failed to load widgets</h3>
+            <h3 className="text-lg font-medium text-red-800">
+              Failed to load widgets
+            </h3>
             <p className="text-red-600">{error}</p>
           </div>
         </div>
@@ -71,10 +83,22 @@ export default function WidgetList() {
   if (widgets.length === 0) {
     return (
       <div className="text-center py-12">
-        <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+        <svg
+          className="w-16 h-16 text-gray-300 mx-auto mb-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"
+          />
         </svg>
-        <h3 className="text-lg font-medium text-gray-900 mb-2">No widgets yet</h3>
+        <h3 className="text-lg font-medium text-gray-900 mb-2">
+          No widgets yet
+        </h3>
         <p className="text-gray-600 mb-4">
           Add your first weather widget to get started!
         </p>

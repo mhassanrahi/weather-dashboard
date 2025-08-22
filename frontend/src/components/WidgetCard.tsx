@@ -1,5 +1,11 @@
-import { useState, useEffect } from 'react';
-import { Widget, WeatherData, weatherApi, widgetsApi, ApiError } from '../utils/api';
+import { useState, useEffect, useCallback } from "react";
+import {
+  Widget,
+  WeatherData,
+  weatherApi,
+  widgetsApi,
+  ApiError,
+} from "../utils/api";
 
 interface WidgetCardProps {
   widget: Widget;
@@ -13,7 +19,7 @@ export default function WidgetCard({ widget, onDelete }: WidgetCardProps) {
   const [weatherError, setWeatherError] = useState<string | null>(null);
 
   // Fetch weather data
-  const fetchWeather = async () => {
+  const fetchWeather = useCallback(async () => {
     try {
       setIsLoadingWeather(true);
       setWeatherError(null);
@@ -21,26 +27,30 @@ export default function WidgetCard({ widget, onDelete }: WidgetCardProps) {
       setWeather(weatherData);
     } catch (err) {
       const error = err as ApiError;
-      setWeatherError(error.message || 'Failed to load weather data');
+      setWeatherError(error.message || "Failed to load weather data");
     } finally {
       setIsLoadingWeather(false);
     }
-  };
+  }, [widget.location]);
 
   // Initial weather fetch
   useEffect(() => {
     fetchWeather();
-  }, [widget.location]);
+  }, [fetchWeather]);
 
   // Auto-refresh weather every 60 seconds
   useEffect(() => {
     const interval = setInterval(fetchWeather, 60000); // 60 seconds
     return () => clearInterval(interval);
-  }, [widget.location]);
+  }, [widget.location, fetchWeather]);
 
   // Handle widget deletion
   const handleDelete = async () => {
-    if (!window.confirm(`Are you sure you want to delete the widget for ${widget.location}?`)) {
+    if (
+      !window.confirm(
+        `Are you sure you want to delete the widget for ${widget.location}?`,
+      )
+    ) {
       return;
     }
 
@@ -66,14 +76,14 @@ export default function WidgetCard({ widget, onDelete }: WidgetCardProps) {
   // Get source badge color
   const getSourceBadgeColor = (source: string) => {
     switch (source) {
-      case 'cache':
-        return 'bg-gray-100 text-gray-800';
-      case 'open-meteo':
-        return 'bg-blue-100 text-blue-800';
-      case 'openweather':
-        return 'bg-orange-100 text-orange-800';
+      case "cache":
+        return "bg-gray-100 text-gray-800";
+      case "open-meteo":
+        return "bg-blue-100 text-blue-800";
+      case "openweather":
+        return "bg-orange-100 text-orange-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
@@ -82,7 +92,9 @@ export default function WidgetCard({ widget, onDelete }: WidgetCardProps) {
       {/* Header */}
       <div className="flex justify-between items-start mb-4">
         <div>
-          <h3 className="text-xl font-semibold text-gray-900">{widget.location}</h3>
+          <h3 className="text-xl font-semibold text-gray-900">
+            {widget.location}
+          </h3>
           <p className="text-sm text-gray-500">
             Added {formatDate(widget.createdAt)}
           </p>
@@ -96,8 +108,18 @@ export default function WidgetCard({ widget, onDelete }: WidgetCardProps) {
           {isDeleting ? (
             <div className="w-5 h-5 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
           ) : (
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+              />
             </svg>
           )}
         </button>
@@ -113,8 +135,18 @@ export default function WidgetCard({ widget, onDelete }: WidgetCardProps) {
         ) : weatherError ? (
           <div className="bg-red-50 border border-red-200 rounded-md p-4">
             <div className="flex items-center">
-              <svg className="w-5 h-5 text-red-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                className="w-5 h-5 text-red-400 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
               <p className="text-sm text-red-600">{weatherError}</p>
             </div>
@@ -133,7 +165,9 @@ export default function WidgetCard({ widget, onDelete }: WidgetCardProps) {
                 <span className="text-3xl font-bold text-gray-900">
                   {weather.temperature}
                 </span>
-                <span className="text-lg text-gray-600 ml-1">{weather.unit}</span>
+                <span className="text-lg text-gray-600 ml-1">
+                  {weather.unit}
+                </span>
               </div>
               <div className="text-right">
                 <p className="text-lg font-medium text-gray-900 capitalize">
@@ -145,15 +179,35 @@ export default function WidgetCard({ widget, onDelete }: WidgetCardProps) {
             {/* Additional Info */}
             <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
               <div className="flex items-center">
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m-9 0h10l1 1v13a2 2 0 01-2 2H8a2 2 0 01-2-2V5l1-1z" />
+                <svg
+                  className="w-4 h-4 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m-9 0h10l1 1v13a2 2 0 01-2 2H8a2 2 0 01-2-2V5l1-1z"
+                  />
                 </svg>
                 <span>Wind: {weather.windKph} km/h</span>
               </div>
               {weather.humidity && (
                 <div className="flex items-center">
-                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 004-4V4a3 3 0 00-6 0v8a4 4 0 004 4z" />
+                  <svg
+                    className="w-4 h-4 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M7 16a4 4 0 004-4V4a3 3 0 00-6 0v8a4 4 0 004 4z"
+                    />
                   </svg>
                   <span>Humidity: {weather.humidity}%</span>
                 </div>
@@ -165,7 +219,9 @@ export default function WidgetCard({ widget, onDelete }: WidgetCardProps) {
               <span className="text-xs text-gray-500">
                 Updated: {formatDate(weather.fetchedAt)}
               </span>
-              <span className={`px-2 py-1 text-xs font-medium rounded-full ${getSourceBadgeColor(weather.source)}`}>
+              <span
+                className={`px-2 py-1 text-xs font-medium rounded-full ${getSourceBadgeColor(weather.source)}`}
+              >
                 via {weather.source}
               </span>
             </div>
