@@ -28,7 +28,7 @@ export interface WeatherData {
   windKph: number;
   humidity?: number;
   fetchedAt: string;
-  source: "open-meteo" | "openweather" | "cache";
+  source: "open-meteo" | "cache";
 }
 
 // Generic API request function

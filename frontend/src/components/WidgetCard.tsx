@@ -80,8 +80,6 @@ export default function WidgetCard({ widget, onDelete }: WidgetCardProps) {
         return "bg-gray-100 text-gray-800";
       case "open-meteo":
         return "bg-blue-100 text-blue-800";
-      case "openweather":
-        return "bg-orange-100 text-orange-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
