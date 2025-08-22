@@ -2,29 +2,6 @@
 
 A simple dashboard application for managing weather widgets for different cities. Users can add multiple weather widgets, view live weather data, and remove widgets as needed.
 
-## 🏗️ Architecture
-
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Frontend      │    │    Backend      │    │   External      │
-│   (Next.js)     │    │   (Express)     │    │   Weather APIs  │
-│                 │    │                 │    │                 │
-│ ┌─────────────┐ │    │ ┌─────────────┐ │    │ ┌─────────────┐ │
-│ │ Dashboard   │ │◄──►│ │ Widget API  │ │    │ │ Open-Meteo  │ │
-│ │ Widget List │ │    │ │ Weather API │ │◄──►│ │ OpenWeather │ │
-│ │ Add/Delete  │ │    │ │ Cache Layer │ │    │ │             │ │
-│ └─────────────┘ │    │ └─────────────┘ │    │ └─────────────┘ │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-         │                        │
-         │                        │
-         └────────────────────────┼─────────────────────────────────
-                                  ▼
-                          ┌─────────────────┐
-                          │    MongoDB      │
-                          │   (Widgets)     │
-                          └─────────────────┘
-```
-
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -74,7 +51,7 @@ A simple dashboard application for managing weather widgets for different cities
 
 - **Frontend**: Next.js (Pages Router), React, Tailwind CSS
 - **Backend**: Node.js, Express.js, MongoDB
-- **Weather APIs**: Open-Meteo (primary), OpenWeather (fallback)
+- **Weather APIs**: Open-Meteo (primary)
 - **Caching**: In-memory cache with TTL
 
 ## 📁 Project Structure
@@ -103,7 +80,6 @@ weather-dashboard/
 ```
 MONGODB_URI=mongodb://localhost:27017/widgets
 PORT=5000
-OPENWEATHER_API_KEY=your_api_key_here
 WEATHER_CACHE_TTL_MS=300000
 ```
 
@@ -152,8 +128,8 @@ Weather data is cached for 5 minutes to optimize API usage:
 
 ## 🌐 Weather Data Sources
 
-1. **Primary**: Open-Meteo (free, no API key required)
-2. **Fallback**: OpenWeather (requires API key)
+Open-Meteo (free, no API key required)
+OpenWeather (requires API key)
 
 Data is normalized to a consistent format regardless of source.
 
