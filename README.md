@@ -49,19 +49,27 @@ A simple dashboard application for managing weather widgets for different cities
 
 ## 🛠️ Technology Stack
 
-- **Frontend**: Next.js (Pages Router), React, Tailwind CSS
+- **Frontend**: Next.js (App Router), React 19, Tailwind CSS v4
 - **Backend**: Node.js, Express.js, MongoDB
-- **Weather APIs**: Open-Meteo (primary)
+- **Weather APIs**: Open-Meteo
 - **Caching**: In-memory cache with TTL
+- **Testing**: Jest, React Testing Library
+- **Linting**: ESLint v9+, Prettier
 
 ## 📁 Project Structure
 
 ```
 weather-dashboard/
-├── frontend/              # Next.js application
-│   ├── pages/            # Page components
-│   ├── components/       # Reusable UI components
-│   ├── utils/           # Utility functions
+├── frontend/              # Next.js application (App Router)
+│   ├── src/
+│   │   ├── app/          # App Router pages and layouts
+│   │   │   ├── layout.tsx    # Root layout
+│   │   │   └── page.tsx      # Home page
+│   │   ├── components/   # Reusable UI components
+│   │   ├── utils/        # Utility functions and API
+│   │   ├── styles/       # Global styles
+│   │   └── __tests__/    # Test files
+│   ├── public/           # Static assets
 │   └── package.json
 ├── backend/              # Express.js API
 │   ├── src/
@@ -69,7 +77,9 @@ weather-dashboard/
 │   │   ├── controllers/ # Route handlers
 │   │   ├── models/      # Database models
 │   │   ├── services/    # Business logic
+│   │   ├── config.js    # Configuration
 │   │   └── index.js     # Application entry
+│   ├── tests/           # Backend tests
 │   └── package.json
 └── README.md
 ```
@@ -78,8 +88,17 @@ weather-dashboard/
 
 ### Backend (.env)
 ```
-MONGODB_URI=mongodb://localhost:27017/widgets
+# Server Configuration
 PORT=5000
+NODE_ENV=development
+
+# Database Configuration
+MONGODB_URI=mongodb://localhost:27017/widgets
+
+# CORS Configuration
+CORS_ORIGIN=http://localhost:3000
+
+# Weather Cache Configuration
 WEATHER_CACHE_TTL_MS=300000
 ```
 
