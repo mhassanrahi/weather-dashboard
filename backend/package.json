@@ -6,9 +6,20 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src/ --ext .js",
+    "lint:fix": "eslint src/ --ext .js --fix",
+    "format": "prettier --write src/**/*.js",
+    "format:check": "prettier --check src/**/*.js"
   },
-  "keywords": ["weather", "dashboard", "widgets", "api"],
+  "keywords": [
+    "weather",
+    "dashboard",
+    "widgets",
+    "api"
+  ],
   "author": "",
   "license": "MIT",
   "type": "commonjs",
@@ -20,5 +31,15 @@
     "mongoose": "^8.17.2",
     "morgan": "^1.10.1",
     "nodemon": "^3.1.10"
+  },
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/supertest": "^6.0.3",
+    "eslint": "^9.33.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "jest": "^30.0.5",
+    "prettier": "^3.6.2",
+    "supertest": "^7.1.4"
   }
 }
