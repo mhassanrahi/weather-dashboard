@@ -3,7 +3,7 @@ const {
   getWidgets,
   createWidget,
   deleteWidget,
-  getWidget
+  getWidget,
 } = require('../controllers/widgets');
 
 const router = express.Router();

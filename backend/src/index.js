@@ -12,10 +12,12 @@ const app = express();
 app.use(helmet());
 
 // CORS configuration
-app.use(cors({
-  origin: config.corsOrigin,
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: config.corsOrigin,
+    credentials: true,
+  })
+);
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
@@ -30,11 +32,11 @@ if (config.nodeEnv === 'development') {
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-  res.json({ 
-    ok: true, 
+  res.json({
+    ok: true,
     timestamp: new Date().toISOString(),
     environment: config.nodeEnv,
-    version: '1.0.0'
+    version: '1.0.0',
   });
 });
 
@@ -46,26 +48,25 @@ app.use('/widgets', widgetRoutes);
 app.use('/weather', weatherRoutes);
 
 // Global error handler
-app.use((err, req, res, next) => {
+app.use((err, req, res, _next) => {
   console.error('❌ Error:', err.stack);
-  
+
   // Default error response
   const statusCode = err.statusCode || 500;
-  const message = config.nodeEnv === 'production' 
-    ? 'Internal Server Error' 
-    : err.message;
-    
+  const message =
+    config.nodeEnv === 'production' ? 'Internal Server Error' : err.message;
+
   res.status(statusCode).json({
     error: message,
-    ...(config.nodeEnv === 'development' && { stack: err.stack })
+    ...(config.nodeEnv === 'development' && { stack: err.stack }),
   });
 });
 
 // 404 handler
 app.use((req, res) => {
-  res.status(404).json({ 
+  res.status(404).json({
     error: 'Route not found',
-    path: req.originalUrl 
+    path: req.originalUrl,
   });
 });
 
@@ -74,7 +75,7 @@ const startServer = async () => {
   try {
     // Connect to database
     await connectDB();
-    
+
     // Start listening
     app.listen(config.port, () => {
       console.log(`🚀 Server running on port ${config.port}`);
