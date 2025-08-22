@@ -40,7 +40,10 @@ app.get('/health', (req, res) => {
 
 // API Routes
 const widgetRoutes = require('./routes/widgets');
+const weatherRoutes = require('./routes/weather');
+
 app.use('/widgets', widgetRoutes);
+app.use('/weather', weatherRoutes);
 
 // Global error handler
 app.use((err, req, res, next) => {
