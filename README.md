@@ -2,6 +2,9 @@
 
 A simple dashboard application for managing weather widgets for different cities. Users can add multiple weather widgets, view live weather data, and remove widgets as needed.
 
+## Demo
+You can try out the fully deployed Weather Widgets Dashboard here: [https://weather-tecomon.vercel.app](https://weather-tecomon.vercel.app).
+
 ## 🚀 Quick Start
 
 ### Prerequisites
