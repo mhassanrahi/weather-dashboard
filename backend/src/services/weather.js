@@ -193,12 +193,12 @@ const getWeatherForLocation = async (location) => {
   // Check cache first
   const cachedWeather = getCachedWeather(normalizedLocation);
   if (cachedWeather) {
-    console.log(`🔄 Returning cached weather for ${normalizedLocation}`);
+    console.log(`Returning cached weather for ${normalizedLocation}`);
     return cachedWeather;
   }
 
   try {
-    console.log(`🌐 Fetching fresh weather data for ${normalizedLocation}`);
+    console.log(`Fetching fresh weather data for ${normalizedLocation}`);
 
     // Resolve coordinates
     const { lat, lon, name } = await resolveLatLon(normalizedLocation);
@@ -224,7 +224,7 @@ const getWeatherForLocation = async (location) => {
     return response;
   } catch (error) {
     console.error(
-      `❌ Weather fetch failed for ${normalizedLocation}:`,
+      `Weather fetch failed for ${normalizedLocation}:`,
       error.message
     );
 
