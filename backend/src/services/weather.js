@@ -250,8 +250,48 @@ const clearExpiredCache = () => {
 // Optional: Clear expired cache every hour
 setInterval(clearExpiredCache, 60 * 60 * 1000);
 
+/**
+ * Search for cities using geocoding APIs
+ */
+const searchCities = async (query) => {
+  if (!query || typeof query !== 'string' || query.trim().length < 2) {
+    return [];
+  }
+
+  const searchQuery = query.trim();
+
+  try {
+    const geocodingUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(searchQuery)}&count=5&language=en&format=json`;
+
+    const response = await fetch(geocodingUrl);
+    if (!response.ok) {
+      throw new Error(`Open-Meteo geocoding failed: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (!data.results || data.results.length === 0) {
+      return [];
+    }
+
+    // Format and return city suggestions
+    return data.results.map((result) => ({
+      name: result.name,
+      country: result.country,
+      state: result.admin1,
+      displayName: `${result.name}${result.admin1 ? `, ${result.admin1}` : ''}, ${result.country}`,
+      lat: result.latitude,
+      lon: result.longitude,
+    }));
+  } catch (error) {
+    console.warn('City search failed:', error.message);
+    return [];
+  }
+};
+
 module.exports = {
   getWeatherForLocation,
   normalizeLocation,
   clearExpiredCache,
+  searchCities,
 };

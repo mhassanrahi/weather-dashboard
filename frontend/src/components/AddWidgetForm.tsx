@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { widgetsApi, ApiError } from "../utils/api";
+import { widgetsApi, ApiError, CitySuggestion } from "../utils/api";
+import CitySuggestions from "./CitySuggestions";
 
 interface AddWidgetFormProps {
   onWidgetAdded?: () => void;
@@ -10,6 +11,7 @@ export default function AddWidgetForm({ onWidgetAdded }: AddWidgetFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,6 +29,9 @@ export default function AddWidgetForm({ onWidgetAdded }: AddWidgetFormProps) {
       await widgetsApi.create({ location: location.trim() });
       setSuccess(`Widget for ${location.trim()} added successfully!`);
       setLocation("");
+      setTimeout(() => {
+        setSuccess(null);
+      }, 3000);
 
       // Notify parent component to refresh the list
       if (onWidgetAdded) {
@@ -45,6 +50,18 @@ export default function AddWidgetForm({ onWidgetAdded }: AddWidgetFormProps) {
     setLocation(e.target.value);
     setError(null);
     setSuccess(null);
+    setShowSuggestions(true);
+  };
+
+  // Handle city selection from suggestions
+  const handleCitySelect = (city: CitySuggestion) => {
+    setLocation(city.name);
+    setShowSuggestions(false);
+  };
+
+  // Handle closing suggestions
+  const handleCloseSuggestions = () => {
+    setShowSuggestions(false);
   };
 
   return (
@@ -62,15 +79,25 @@ export default function AddWidgetForm({ onWidgetAdded }: AddWidgetFormProps) {
             City Name
           </label>
           <div className="flex gap-3">
-            <input
-              type="text"
-              id="location"
-              value={location}
-              onChange={handleLocationChange}
-              placeholder="Enter city name (e.g., Berlin, Paris, Tokyo)"
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              disabled={isLoading}
-            />
+            <div className="flex-1 relative">
+              <input
+                type="text"
+                id="location"
+                value={location}
+                onChange={handleLocationChange}
+                onFocus={() => setShowSuggestions(true)}
+                placeholder="Start typing a city name..."
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                disabled={isLoading}
+                autoComplete="off"
+              />
+              <CitySuggestions
+                query={location}
+                onSelect={handleCitySelect}
+                isVisible={showSuggestions}
+                onClose={handleCloseSuggestions}
+              />
+            </div>
             <button
               type="submit"
               disabled={isLoading || !location.trim()}
@@ -88,7 +115,7 @@ export default function AddWidgetForm({ onWidgetAdded }: AddWidgetFormProps) {
           </div>
         )}
 
-        {/* Success Message */}
+        {/* Success Message for some time */}
         {success && (
           <div className="p-3 bg-green-50 border border-green-200 rounded-md">
             <p className="text-sm text-green-600">{success}</p>

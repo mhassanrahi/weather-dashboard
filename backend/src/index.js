@@ -49,7 +49,7 @@ app.use('/weather', weatherRoutes);
 
 // Global error handler
 app.use((err, req, res, _next) => {
-  console.error('❌ Error:', err.stack);
+  console.error('Error:', err.stack);
 
   // Default error response
   const statusCode = err.statusCode || 500;

@@ -105,6 +105,16 @@ export const widgetsApi = {
     apiRequest<Widget>(`/widgets/${id}`),
 };
 
+// City suggestion types
+export interface CitySuggestion {
+  name: string;
+  country: string;
+  state?: string;
+  displayName: string;
+  lat: number;
+  lon: number;
+}
+
 // Weather API functions
 export const weatherApi = {
   // Get weather for a location
@@ -112,6 +122,10 @@ export const weatherApi = {
     apiRequest<WeatherData>(
       `/weather?location=${encodeURIComponent(location)}`,
     ),
+  
+  // Search for cities
+  searchCities: (query: string): Promise<CitySuggestion[]> =>
+    apiRequest<CitySuggestion[]>(`/weather/search?q=${encodeURIComponent(query)}`),
 };
 
 // Health check
