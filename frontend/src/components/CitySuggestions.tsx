@@ -80,13 +80,13 @@ export default function CitySuggestions({
         case "ArrowDown":
           e.preventDefault();
           setSelectedIndex((prev) =>
-            prev < suggestions.length - 1 ? prev + 1 : 0
+            prev < suggestions.length - 1 ? prev + 1 : 0,
           );
           break;
         case "ArrowUp":
           e.preventDefault();
           setSelectedIndex((prev) =>
-            prev > 0 ? prev - 1 : suggestions.length - 1
+            prev > 0 ? prev - 1 : suggestions.length - 1,
           );
           break;
         case "Enter":
@@ -165,11 +165,14 @@ export default function CitySuggestions({
         </ul>
       )}
 
-      {!isLoading && !error && suggestions.length === 0 && query.trim().length >= 2 && (
-        <div className="p-3 text-center text-gray-500 text-sm">
-          No cities found
-        </div>
-      )}
+      {!isLoading &&
+        !error &&
+        suggestions.length === 0 &&
+        query.trim().length >= 2 && (
+          <div className="p-3 text-center text-gray-500 text-sm">
+            No cities found
+          </div>
+        )}
     </div>
   );
 }

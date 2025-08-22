@@ -24,7 +24,9 @@ describe("AddWidgetForm", () => {
     render(<AddWidgetForm />);
 
     expect(screen.getByLabelText(/city name/i)).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/enter city name/i)).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText(/start typing a city name/i),
+    ).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: /add widget/i }),
     ).toBeInTheDocument();
@@ -87,7 +89,7 @@ describe("AddWidgetForm", () => {
   test("handles duplicate widget error", async () => {
     const user = userEvent.setup();
 
-    const error = new Error("Widget already exists");
+    const error = new Error("Widget already exists") as Error & { status?: number };
     error.status = 409;
     mockCreate.mockRejectedValueOnce(error);
 

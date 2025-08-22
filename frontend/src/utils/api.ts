@@ -122,10 +122,12 @@ export const weatherApi = {
     apiRequest<WeatherData>(
       `/weather?location=${encodeURIComponent(location)}`,
     ),
-  
+
   // Search for cities
   searchCities: (query: string): Promise<CitySuggestion[]> =>
-    apiRequest<CitySuggestion[]>(`/weather/search?q=${encodeURIComponent(query)}`),
+    apiRequest<CitySuggestion[]>(
+      `/weather/search?q=${encodeURIComponent(query)}`,
+    ),
 };
 
 // Health check
