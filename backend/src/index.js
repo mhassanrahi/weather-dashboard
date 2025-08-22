@@ -38,6 +38,10 @@ app.get('/health', (req, res) => {
   });
 });
 
+// API Routes
+const widgetRoutes = require('./routes/widgets');
+app.use('/widgets', widgetRoutes);
+
 // Global error handler
 app.use((err, req, res, next) => {
   console.error('❌ Error:', err.stack);
