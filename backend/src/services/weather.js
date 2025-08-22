@@ -10,11 +10,12 @@ const normalizeLocation = (location) => {
   if (!location || typeof location !== 'string') {
     return '';
   }
-  
-  return location.trim()
+
+  return location
+    .trim()
     .toLowerCase()
     .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 };
 
@@ -23,7 +24,7 @@ const normalizeLocation = (location) => {
  */
 const isCacheValid = (cacheEntry) => {
   if (!cacheEntry) return false;
-  
+
   const now = Date.now();
   const cacheAge = now - cacheEntry.fetchedAt;
   return cacheAge < config.weatherCacheTtlMs;
@@ -36,14 +37,14 @@ const getCachedWeather = (location) => {
   const normalizedLocation = normalizeLocation(location);
   const cacheKey = normalizedLocation.toLowerCase();
   const cacheEntry = weatherCache.get(cacheKey);
-  
+
   if (cacheEntry && isCacheValid(cacheEntry)) {
     return {
       ...cacheEntry.data,
-      source: 'cache'
+      source: 'cache',
     };
   }
-  
+
   return null;
 };
 
@@ -53,10 +54,10 @@ const getCachedWeather = (location) => {
 const cacheWeatherData = (location, weatherData) => {
   const normalizedLocation = normalizeLocation(location);
   const cacheKey = normalizedLocation.toLowerCase();
-  
+
   weatherCache.set(cacheKey, {
     data: weatherData,
-    fetchedAt: Date.now()
+    fetchedAt: Date.now(),
   });
 };
 
@@ -66,26 +67,25 @@ const cacheWeatherData = (location, weatherData) => {
 const resolveLatLonOpenMeteo = async (location) => {
   try {
     const geocodingUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(location)}&count=1&language=en&format=json`;
-    
+
     const response = await fetch(geocodingUrl);
     if (!response.ok) {
       throw new Error(`Open-Meteo geocoding failed: ${response.status}`);
     }
-    
+
     const data = await response.json();
-    
+
     if (!data.results || data.results.length === 0) {
       throw new Error('Location not found in Open-Meteo');
     }
-    
+
     const result = data.results[0];
     return {
       lat: result.latitude,
       lon: result.longitude,
       name: result.name,
-      country: result.country
+      country: result.country,
     };
-    
   } catch (error) {
     console.warn('Open-Meteo geocoding failed:', error.message);
     throw error;
@@ -93,52 +93,14 @@ const resolveLatLonOpenMeteo = async (location) => {
 };
 
 /**
- * Resolve latitude and longitude from city name using OpenWeather Geocoding (fallback)
- */
-const resolveLatLonOpenWeather = async (location) => {
-  if (!config.openweatherApiKey) {
-    throw new Error('OpenWeather API key not configured');
-  }
-  
-  try {
-    const geocodingUrl = `http://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(location)}&limit=1&appid=${config.openweatherApiKey}`;
-    
-    const response = await fetch(geocodingUrl);
-    if (!response.ok) {
-      throw new Error(`OpenWeather geocoding failed: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    
-    if (!data || data.length === 0) {
-      throw new Error('Location not found in OpenWeather');
-    }
-    
-    const result = data[0];
-    return {
-      lat: result.lat,
-      lon: result.lon,
-      name: result.name,
-      country: result.country
-    };
-    
-  } catch (error) {
-    console.warn('OpenWeather geocoding failed:', error.message);
-    throw error;
-  }
-};
-
-/**
- * Resolve coordinates with fallback
+ * Resolve coordinates
  */
 const resolveLatLon = async (location) => {
   try {
-    // Try Open-Meteo first
     return await resolveLatLonOpenMeteo(location);
   } catch (error) {
-    console.warn('Falling back to OpenWeather geocoding');
-    // Fallback to OpenWeather
-    return await resolveLatLonOpenWeather(location);
+    console.warn('Open-Meteo geocoding failed:', error.message);
+    throw error;
   }
 };
 
@@ -147,21 +109,21 @@ const resolveLatLon = async (location) => {
  */
 const fetchWeatherOpenMeteo = async (lat, lon) => {
   try {
-    const weatherUrl = `https://api.open-meteo.com/v1/current?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&wind_speed_unit=kmh`;
-    
+    const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&wind_speed_unit=kmh`;
+
     const response = await fetch(weatherUrl);
     if (!response.ok) {
       throw new Error(`Open-Meteo weather API failed: ${response.status}`);
     }
-    
+
     const data = await response.json();
-    
+
     if (!data.current) {
       throw new Error('Invalid Open-Meteo weather response');
     }
-    
+
     const current = data.current;
-    
+
     // Map weather codes to descriptions (simplified)
     const getWeatherCondition = (code) => {
       const weatherCodes = {
@@ -185,21 +147,20 @@ const fetchWeatherOpenMeteo = async (lat, lon) => {
         82: 'Violent rain showers',
         95: 'Thunderstorm',
         96: 'Thunderstorm with slight hail',
-        99: 'Thunderstorm with heavy hail'
+        99: 'Thunderstorm with heavy hail',
       };
-      
+
       return weatherCodes[code] || 'Unknown';
     };
-    
+
     return {
       temperature: current.temperature_2m,
       unit: '°C',
       conditions: getWeatherCondition(current.weather_code),
       windKph: current.wind_speed_10m,
       humidity: current.relative_humidity_2m,
-      source: 'open-meteo'
+      source: 'open-meteo',
     };
-    
   } catch (error) {
     console.warn('Open-Meteo weather fetch failed:', error.message);
     throw error;
@@ -207,49 +168,15 @@ const fetchWeatherOpenMeteo = async (lat, lon) => {
 };
 
 /**
- * Fetch weather data from OpenWeather (fallback)
- */
-const fetchWeatherOpenWeather = async (lat, lon) => {
-  if (!config.openweatherApiKey) {
-    throw new Error('OpenWeather API key not configured');
-  }
-  
-  try {
-    const weatherUrl = `http://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${config.openweatherApiKey}&units=metric`;
-    
-    const response = await fetch(weatherUrl);
-    if (!response.ok) {
-      throw new Error(`OpenWeather API failed: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    
-    return {
-      temperature: data.main.temp,
-      unit: '°C',
-      conditions: data.weather[0].description,
-      windKph: data.wind.speed * 3.6, // Convert m/s to km/h
-      humidity: data.main.humidity,
-      source: 'openweather'
-    };
-    
-  } catch (error) {
-    console.warn('OpenWeather fetch failed:', error.message);
-    throw error;
-  }
-};
-
-/**
- * Fetch weather with fallback
+ * Fetch weather
  */
 const fetchWeather = async (lat, lon) => {
   try {
     // Try Open-Meteo first
     return await fetchWeatherOpenMeteo(lat, lon);
   } catch (error) {
-    console.warn('Falling back to OpenWeather API');
-    // Fallback to OpenWeather
-    return await fetchWeatherOpenWeather(lat, lon);
+    console.warn('Open-Meteo weather fetch failed:', error.message);
+    throw error;
   }
 };
 
@@ -260,25 +187,25 @@ const getWeatherForLocation = async (location) => {
   if (!location || typeof location !== 'string') {
     throw new Error('Location is required and must be a string');
   }
-  
+
   const normalizedLocation = normalizeLocation(location);
-  
+
   // Check cache first
   const cachedWeather = getCachedWeather(normalizedLocation);
   if (cachedWeather) {
     console.log(`🔄 Returning cached weather for ${normalizedLocation}`);
     return cachedWeather;
   }
-  
+
   try {
     console.log(`🌐 Fetching fresh weather data for ${normalizedLocation}`);
-    
+
     // Resolve coordinates
     const { lat, lon, name } = await resolveLatLon(normalizedLocation);
-    
+
     // Fetch weather data
     const weatherData = await fetchWeather(lat, lon);
-    
+
     // Create response object
     const response = {
       location: name || normalizedLocation,
@@ -288,19 +215,23 @@ const getWeatherForLocation = async (location) => {
       windKph: parseFloat(weatherData.windKph.toFixed(1)),
       humidity: weatherData.humidity,
       fetchedAt: new Date().toISOString(),
-      source: weatherData.source
+      source: weatherData.source,
     };
-    
+
     // Cache the response
     cacheWeatherData(normalizedLocation, response);
-    
+
     return response;
-    
   } catch (error) {
-    console.error(`❌ Weather fetch failed for ${normalizedLocation}:`, error.message);
-    
+    console.error(
+      `❌ Weather fetch failed for ${normalizedLocation}:`,
+      error.message
+    );
+
     // Return a friendly error response
-    throw new Error(`Unable to fetch weather data for ${normalizedLocation}. Please try again later.`);
+    throw new Error(
+      `Unable to fetch weather data for ${normalizedLocation}. Please try again later.`
+    );
   }
 };
 
@@ -322,5 +253,5 @@ setInterval(clearExpiredCache, 60 * 60 * 1000);
 module.exports = {
   getWeatherForLocation,
   normalizeLocation,
-  clearExpiredCache
+  clearExpiredCache,
 };
