@@ -11,6 +11,22 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/out/
+frontend/coverage/
+frontend/logs/
+
+# Backend
+backend/node_modules/
+backend/dist/
+backend/build/
+backend/out/
+backend/coverage/
+backend/logs/
+
 # Logs
 logs
 *.log
